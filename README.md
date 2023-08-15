@@ -1,1 +1,1 @@
-# bluecode-test-chocolate-factory
+# Chocolate factory - Proficiency test
