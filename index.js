@@ -1,41 +1,44 @@
-const input = [1, 2, 1, 4, 4, 4, 1, 2, 1, 1]
-var maxChocolateTypes = 2
-collectBars(input);
-
-function collectBars(bars) {
-    const result = bars.reduce(compareBarsQuantity, { quantity: 0, bars: [] })
-    displayResult(result)
+function collectBestBars(chocolateBars) {
+    const result = chocolateBars.reduce(compareBarsQuantity, { quantity: 0, selectedBars: [] });
+    displayResult(result);
 }
 
-function compareBarsQuantity(previousCollectedBars, current, index, bars) {
-    const collectedBars = getBars(index, bars)
-    return collectedBars.quantity > previousCollectedBars.quantity
-        ? collectedBars
-        : previousCollectedBars
+function compareBarsQuantity(previousBest, current, index, chocolateBars) {
+    const bestBars = findBestBars(index, chocolateBars);
+    return bestBars.quantity > previousBest.quantity ? bestBars : previousBest;
 }
 
-function getBars(index, bars) {
-    const baskets = {}
-    let skipIndex = null
-    bars
-        .slice(index, bars.length)
-        .forEach((bar, index) => {
-            if (skipIndex) return
-            if (baskets[bar]) return baskets[bar] += 1
-            return Object.keys(baskets).length < maxChocolateTypes
-                ? baskets[bar] = 1
-                : skipIndex = index;
-        })
-    const total = Object.keys(baskets).reduce((prev, curr) => {
-        return prev + baskets[curr]
-    }, 0)
-    const barsShare = bars.slice(index, bars.length).slice(0, skipIndex || bars.length)
+function findBestBars(startIndex, chocolateBars) {
+    const baskets = {};
+    let skipIndex = null;
+
+    chocolateBars.slice(startIndex).forEach((bar, index) => {
+        if (skipIndex) return;
+        
+        if (baskets[bar]) return (baskets[bar] += 1);
+
+        if (Object.keys(baskets).length < MAX_TYPES_OF_CHOCOLATE) {
+            baskets[bar] = 1;
+        } else {
+            skipIndex = index;
+        }
+    });
+
+    const totalQuantity = Object.values(baskets).reduce((total, count) => total + count, 0);
+    const selectedBars = chocolateBars.slice(startIndex).slice(0, skipIndex || chocolateBars.length);
+
     return {
-        quantity: total,
-        bars: barsShare
-    }
+        quantity: totalQuantity,
+        selectedBars: selectedBars
+    };
 }
-function displayResult({ quantity, bars }) {
-    console.log('Output:', quantity)
-    console.log('Explanation: We can pick from bars', bars)
+
+function displayResult({ quantity, selectedBars }) {
+    console.log('Output:', quantity);
+    console.log('Explanation: We can pick from bars', selectedBars);
 }
+
+const chocolateBars = [1, 2, 1, 4, 4, 4, 1, 2, 1, 1];
+const maxTypeOfChocolates = 2;
+
+collectBestBars(chocolateBars);
